@@ -4,3 +4,5 @@ export const BASE_URL =
 export const SECRET_KEY = "SECRET_KEY";
 export const DEFAULT_SECRET_KEY = "00000000000000000000";
 export const SERIAL_KEY = "SERIAL_KEY";
+
+export const DEFAULT_TEXT_CODE_VIEW = "▮▮▮▮▮▮";

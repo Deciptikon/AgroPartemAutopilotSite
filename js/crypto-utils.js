@@ -8,7 +8,8 @@ import { SECRET_KEY } from "./config.js";
 export async function generateSignature(unsignedUrl) {
   return "123456";
 
-  const text = unsignedUrl + SECRET_KEY;
+  const secretKey = localStorage.getItem(SECRET_KEY);
+  const text = unsignedUrl + secretKey;
   const encoder = new TextEncoder();
   const data = encoder.encode(text);
   const hashBuffer = await crypto.subtle.digest("SHA-256", data);
