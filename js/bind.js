@@ -3,52 +3,75 @@ import {
   SERIAL_KEY,
   BASE_URL,
   SECRET_KEY,
+  PERIOD_PINGOUT,
 } from "./config.js";
+import { dateToStr } from "./utils.js";
 import { sendDataToServer } from "./crypto-utils.js";
 
 const serialKeyInput = document.getElementById("serialKeyInput");
 const codeView = document.getElementById("codeView");
 const updBtn = document.getElementById("updBtn");
 
+const serialKey = localStorage.getItem(SERIAL_KEY);
+
 let intervalId = null;
 
 document.addEventListener("DOMContentLoaded", function () {
-  const serialKey = localStorage.getItem(SERIAL_KEY);
   serialKeyInput.value = serialKey;
   codeView.textContent = DEFAULT_TEXT_CODE_VIEW;
+  console.log(`Serial Key: "${serialKey}"`);
 
-  setTimeout(function () {
-    //codeView.textContent = createTextCode("183469");
-    startInterval(updateCodeView, 10000);
-  }, 1000);
+  startInterval(async () => {
+    try {
+      await updateCodeView();
+    } catch (error) {
+      console.error("Ошибка в updateCodeView:", error);
+    }
+  }, PERIOD_PINGOUT);
 });
 
 updBtn.addEventListener("click", async () => {
-  updateCodeView();
+  try {
+    await updateCodeView();
+  } catch (error) {
+    console.error("Ошибка в updateCodeView:", error);
+  }
 });
 
 function createTextCode(code) {
   return `${code}`.split("").join(" ");
 }
 
-function updateCodeView() {
-  const result = {
+async function updateCodeView() {
+  console.log("Отправляем данные...");
+  /**const result = {
     message: "////", ///////////////////////////////////////////////////////////////////////////////////
-    code: 300, ////////////////////////////////////////////////////////////////////////
+    code: 202, ////////////////////////////////////////////////////////////////////////
     data: {
       id: 666, /////////////////////////
-      code: "154862",
+      bind_key: "154862",
     },
+  }; */
+  const data = {
+    serial_key: serialKey,
+    timestamp: dateToStr(new Date()),
   };
 
-  //const result = await sendDataToServer(BASE_URL, data, true);
+  const result = await sendDataToServer(BASE_URL, data, true);
   console.log(result);
 
-  if (result.code === 300 && result.data?.code) {
-    codeView.textContent = createTextCode(result.data.code);
+  // Если устройство готово к привязке
+  if (result.code === 202 && result.data?.bind_key) {
+    codeView.textContent = createTextCode(result.data.bind_key);
     //stopInterval();
-  } else if (result.code === 301 && result.data?.secret_key) {
+
+    // Если код привязки верный и устройство было привязано
+  } else if (result.code === 201 && result.data?.secret_key) {
     localStorage.setItem(SECRET_KEY, result.data.secret_key);
+    setTimeout(() => {
+      window.location.href = "./index.html";
+    }, 3000);
+    // Если случилась ошибка
   } else {
     codeView.textContent = DEFAULT_TEXT_CODE_VIEW;
   }

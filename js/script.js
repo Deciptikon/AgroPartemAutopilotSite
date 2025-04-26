@@ -30,10 +30,11 @@ btn.addEventListener("click", async () => {
 
   try {
     const data = {
-      serial: serialKey,
-      time: dateToStr(new Date()),
+      serial_key: serialKey,
+      timestamp: dateToStr(new Date()),
     };
 
+    /* 
     const result = {
       message: "////", ///////////////////////////////////////////////////////////////////////////////////
       code: 300, ////////////////////////////////////////////////////////////////////////
@@ -41,15 +42,15 @@ btn.addEventListener("click", async () => {
         /////////////////////////////////
         id: 666, /////////////////////////
       }, //////////////////////////////////////////////////////////////////////////////////
-    };
+    };*/
 
-    //const result = await sendDataToServer(BASE_URL, data, true);
+    const result = await sendDataToServer(BASE_URL, data, true);
     console.log(result);
 
     status.innerHTML = `
         <div class="alert alert-success">
           <h5>${result.message}</h5>
-          <p>ID: ${result.data.id}</p>
+          <p>ID: ${result.data.serial_key}</p>
         </div>
       `;
 

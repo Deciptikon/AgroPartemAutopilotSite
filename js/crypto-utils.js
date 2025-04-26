@@ -17,16 +17,25 @@ export async function generateSignature(unsignedUrl) {
   return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+function buildSortedQueryString(params) {
+  // Сортируем параметры по ключу и собираем строку
+  return Object.keys(params)
+    .sort() // Сортировка параметров по алфавиту
+    .map(
+      (key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`
+    )
+    .join("&");
+}
+
 export async function sendDataToServer(url, data, signed = null) {
-  const baseUrl = new URL(url);
-  for (let key in data) {
-    baseUrl.searchParams.append(key, data[key]);
-  }
+  let URL = url;
+  let QS = data ? buildSortedQueryString(data) : "";
+
   if (signed) {
-    const signature = await generateSignature(baseUrl.toString());
-    baseUrl.searchParams.append("sig", signature);
+    const signature = await generateSignature(QS);
+    QS = `${QS}&sign=${signature}`;
   }
-  const finalUrl = baseUrl.toString();
+  const finalUrl = `${URL}?${QS}`;
   console.log(finalUrl);
   const response = await fetch(finalUrl);
   //console.log(response);
