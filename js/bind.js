@@ -44,14 +44,7 @@ function createTextCode(code) {
 
 async function updateCodeView() {
   console.log("Отправляем данные...");
-  /**const result = {
-    message: "////", ///////////////////////////////////////////////////////////////////////////////////
-    code: 202, ////////////////////////////////////////////////////////////////////////
-    data: {
-      id: 666, /////////////////////////
-      bind_key: "154862",
-    },
-  }; */
+
   const data = {
     serial_key: serialKey,
     timestamp: dateToStr(new Date()),

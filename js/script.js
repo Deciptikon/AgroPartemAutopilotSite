@@ -3,15 +3,18 @@ import { dateToStr } from "./utils.js";
 import { sendDataToServer } from "./crypto-utils.js";
 
 const serialKeyInput = document.getElementById("serialKeyInput");
-let serialKey = serialKeyInput.value;
+let serialKey = null;
 
 const btn = document.getElementById("sendBtn");
 const status = document.getElementById("status");
 
 document.addEventListener("DOMContentLoaded", function () {
-  // Инициализация
-  //document.querySelector("main").innerHTML = getSendBlock();
-  //initSendSystem(serialKey);
+  serialKey = localStorage.getItem(SERIAL_KEY);
+  if (!serialKey) {
+    serialKey = serialKeyInput.value;
+  } else {
+    serialKeyInput.value = serialKey;
+  }
 });
 
 // Отслеживаем изменения в реальном времени
